@@ -1,14 +1,23 @@
-# 输入文本处理
-import torch
-from torch.nn import Module, Linear
+"""输入文本处理模块"""
 
-class TextEncoder(Module):
+import torch
+from torch import nn
+
+class TextEncoder(nn.Module):
     def __init__(self, vocab_size, hidden_size):
-        super(TextEncoder, self).__init__()
-        self.embedding = Linear(vocab_size, hidden_size)
-        # 可以添加更多的层或结构
+        super().__init__()
+        self.embedding = nn.Embedding(vocab_size, hidden_size)
+        self.encoder = nn.Sequential(
+            nn.Linear(hidden_size, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, hidden_size)
+        )
 
     def forward(self, input_text):
-        # 实现输入文本的编码逻辑
+        """
+        对输入文本进行编码
+        :param input_text: 输入文本张量，形状为 (batch_size, seq_len)
+        :return: 编码后的张量，形状为 (batch_size, seq_len, hidden_size)
+        """
         embedded = self.embedding(input_text)
-        return embedded
+        return self.encoder(embedded)
